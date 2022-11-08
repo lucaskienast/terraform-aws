@@ -1,4 +1,4 @@
-# Terraform Block
+# Terraform block
 terraform {
   required_version = "~> 1.3.2"
   required_providers {
@@ -7,5 +7,16 @@ terraform {
       version = "~> 4.38.0"
     }
   }
+  cloud {
+    organization = "hcta-demo-3094"
 
+    workspaces {
+      name = "terraform-aws-devops-caltech"
+    }
+  }
+}
+
+# Provider block
+provider "aws" {
+  region = var.aws_region
 }
