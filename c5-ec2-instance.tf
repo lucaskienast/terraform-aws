@@ -8,7 +8,3 @@ resource "aws_instance" "jenkins-ec2-vm" {
     "Name" = "jenkins-amz-linux-vm"
   }
 }
-
-
-
-
