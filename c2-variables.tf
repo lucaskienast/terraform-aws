@@ -4,7 +4,7 @@ variable "aws_region" {
   type        = string
 }
 
-variable "ec2_instance_type" {
+variable "instance_type" {
   description = "EC2 Instance Type - Instance Sizing"
   type        = string
 }
