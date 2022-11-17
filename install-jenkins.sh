@@ -1,15 +1,17 @@
 #!/bin/bash
 
-# Install Ansible
+# Update System
 sudo yum update -y
+
+# Install Ansible
 sudo amazon-linux-extras install ansible2 -y
 ansible --version
 
 # Install Jenkins
 sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
 sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
-amazon-linux-extras install epel
-amazon-linux-extras install java-openjdk11
+sudo amazon-linux-extras install epel -y
+sudo amazon-linux-extras install java-openjdk11 -y
 sudo yum install jenkins -y
 sudo systemctl enable jenkins
 sudo systemctl start jenkins
