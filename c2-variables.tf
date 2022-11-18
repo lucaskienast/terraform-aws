@@ -9,8 +9,10 @@ variable "instance_type" {
   type        = string
 }
 
+/*
 variable "ec2_instance_names" {
   description = "EC2 Instance Names"
   type        = list(string)
-  default     = ["jenkins", "tomcat"]
+  default     = ["ansible", "jenkins", "tomcat"]
 }
+*/
