@@ -41,6 +41,7 @@ sudo echo $1 >> /etc/ansible/hosts
 ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1
 sshpass -p "Secret123" ssh-copy-id -o StrictHostKeyChecking=no ec2-user@$(sudo hostname -I | awk '{print $1}')
 sshpass -p "Secret123" ssh-copy-id -o StrictHostKeyChecking=no ec2-user@$1
+# ansible all -m ping
 
 # Create playbook to create Docker image from war file & push to Docker Hub
 touch /opt/docker/regapp.yml
@@ -55,6 +56,7 @@ sudo echo "  - name: create tag to push image to Docker Hub" >> /opt/docker/rega
 sudo echo "    command: docker tag regapp:latest lucaskienast/regapp:latest" >> /opt/docker/regapp.yml
 sudo echo "  - name: push docker image" >> /opt/docker/regapp.yml
 sudo echo "    command: docker push lucaskienast/regapp:latest" >> /opt/docker/regapp.yml
+# ansible-playbook /opt/docker/regapp.yml
 
 # Create playbook to create container on Docker host and pull image from Docker Hub
 touch /opt/docker/deploy_regapp.yml
@@ -69,3 +71,5 @@ sudo echo "    command: docker rmi -f lucaskienast/regapp:latest" >> /opt/docker
 sudo echo "    ignore_errors: yes" >> /opt/docker/deploy_regapp.yml
 sudo echo "  - name: create container" >> /opt/docker/deploy_regapp.yml
 sudo echo "    command: docker run -d --rm --name regapp-server -p 8080:8080 lucaskienast/regapp:latest" >> /opt/docker/deploy_regapp.yml
+# ansible-playbook /opt/docker/deploy_regapp.yml
+
