@@ -14,7 +14,6 @@ sudo yum install docker -y
 sudo systemctl enable docker
 sudo systemctl start docker
 sudo mkdir /opt/docker
-#sudo chmod 777 /var/run/docker.sock
 
 # Setup user
 sudo echo -e "Secret123\nSecret123" | sudo passwd ec2-user  
