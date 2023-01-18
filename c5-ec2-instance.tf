@@ -22,12 +22,29 @@ resource "aws_instance" "docker-amzn-ec2-vm" {
   }
 }
 
+# TODO: create IAM role via TF and connect to this EC2 instance
+# AmazonEC2FullAccess
+# IAMFullAccess
+# AdministratorAccess
+# AWSCloudFormationFullAccess
+resource "aws_instance" "k8-amzn-ec2-vm" {
+  ami                    = data.aws_ami.amzlinux.id
+  instance_type          = var.instance_type
+  key_name               = "terraform-key"
+  vpc_security_group_ids = [aws_security_group.vpc-ssh.id, aws_security_group.vpc-web.id]
+  user_data              = file("./bash-scripts/install-k8.sh")
+  depends_on             = [aws_instance.jenkins-amzn-ec2-vm]
+  tags = {
+    "Name" = "k8-amzn-linux-vm"
+  }
+}
+
 resource "aws_instance" "ansible-amzn-ec2-vm" {
   ami                    = data.aws_ami.amzlinux.id
   instance_type          = var.instance_type
   key_name               = "terraform-key"
   vpc_security_group_ids = [aws_security_group.vpc-ssh.id, aws_security_group.vpc-web.id]
-  depends_on             = [aws_instance.docker-amzn-ec2-vm]
+  depends_on             = [aws_instance.docker-amzn-ec2-vm, aws_instance.k8-amzn-ec2-vm]
   tags = {
     "Name" = "ansible-amzn-linux-vm"
   }
@@ -48,24 +65,7 @@ resource "aws_instance" "ansible-amzn-ec2-vm" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/install-ansible.sh",
-      "/tmp/install-ansible.sh ${aws_instance.docker-amzn-ec2-vm.private_ip}"
+      "/tmp/install-ansible.sh ${aws_instance.docker-amzn-ec2-vm.private_ip} ${aws_instance.k8-amzn-ec2-vm.private_ip}"
     ]
-  }
-}
-
-# TODO: create IAM role via TF and connect to this EC2 instance
-# AmazonEC2FullAccess
-# IAMFullAccess
-# AdministratorAccess
-# AWSCloudFormationFullAccess
-resource "aws_instance" "k8-amzn-ec2-vm" {
-  ami                    = data.aws_ami.amzlinux.id
-  instance_type          = var.instance_type
-  key_name               = "terraform-key"
-  vpc_security_group_ids = [aws_security_group.vpc-ssh.id, aws_security_group.vpc-web.id]
-  #user_data              = file("./bash-scripts/install-k8.sh")
-  depends_on = [aws_instance.ansible-amzn-ec2-vm]
-  tags = {
-    "Name" = "k8-amzn-linux-vm"
   }
 }
