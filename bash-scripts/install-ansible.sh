@@ -15,7 +15,9 @@ sudo systemctl enable docker
 sudo systemctl start docker
 sudo usermod -aG docker ec2-user
 sudo mkdir /opt/docker
+sudo mkdir /opt/k8
 sudo chown ec2-user:ec2-user /opt/docker
+sudo chown ec2-user:ec2-user /opt/k8
 
 # Create Docker file for regapp
 touch /opt/docker/Dockerfile
@@ -45,7 +47,6 @@ sudo echo $2 >> /etc/ansible/hosts
 ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa <<<y >/dev/null 2>&1
 sshpass -p "Secret123" ssh-copy-id -o StrictHostKeyChecking=no ec2-user@$(sudo hostname -I | awk '{print $1}')
 sshpass -p "Secret123" ssh-copy-id -o StrictHostKeyChecking=no ec2-user@$1
-sshpass -p "Secret123" ssh-copy-id -o StrictHostKeyChecking=no ec2-user@$(sudo hostname -I | awk '{print $2}')
 sshpass -p "Secret123" ssh-copy-id -o StrictHostKeyChecking=no ec2-user@$2
 # ansible all -m ping
 
@@ -86,6 +87,7 @@ sudo echo "- hosts: k8host" >> /opt/k8/kube_deploy_regapp.yml
 sudo echo "  tasks:" >> /opt/k8/kube_deploy_regapp.yml
 sudo echo "  - name: deploy regapp on k8" >> /opt/k8/kube_deploy_regapp.yml
 sudo echo "    command: kubectl apply -f /home/ec2-user/regapp-deployment.yml" >> /opt/k8/kube_deploy_regapp.yml
+# ansible-playbook /opt/k8/kube_deploy_regapp.yml
 
 # Create playbook to create k8 service on k8 host
 touch /opt/k8/kube_service_regapp.yml
@@ -94,3 +96,6 @@ sudo echo "- hosts: k8host" >> /opt/k8/kube_service_regapp.yml
 sudo echo "  tasks:" >> /opt/k8/kube_service_regapp.yml
 sudo echo "  - name: deploy regapp on k8" >> /opt/k8/kube_service_regapp.yml
 sudo echo "    command: kubectl apply -f /home/ec2-user/regapp-service.yml" >> /opt/k8/kube_service_regapp.yml
+sudo echo "  - name: update deployment with new pods if image updated in docker hub" >> /opt/k8/kube_service_regapp.yml
+sudo echo "    command: kubectl rollout restart deployment.apps/lucas-regapp" >> /opt/k8/kube_service_regapp.yml
+# ansible-playbook /opt/k8/kube_service_regapp.yml
